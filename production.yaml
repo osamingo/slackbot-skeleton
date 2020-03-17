@@ -1,0 +1,26 @@
+runtime: go113
+
+service: bot
+
+inbound_services:
+  - warmup
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
+
+instance_class: F1
+automatic_scaling:
+  min_idle_instances: 1
+  max_idle_instances: 1
+  min_pending_latency: automatic
+  max_pending_latency: automatic
+  max_concurrent_requests: 80
+
+env_variables:
+  NODE_ENV: production
+  TIMEOUT_SECOND: 15
+  BOT_NAME: sample-bot
+  EVENT_ROUTING_KEY: X-Bot-Task-Name
+  DEFAULT_SLACK_CHANNEL:

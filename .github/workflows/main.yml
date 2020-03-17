@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Init dev tools
+        run: make init
+      - name: Lint Go Code
+        run: make lint
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Init dev tools
+        run: make init
+      - name: Test Go Code
+        run: make test
