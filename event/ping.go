@@ -4,11 +4,10 @@ import (
 	"context"
 
 	"github.com/go-joe/joe"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 func NewPingExecution(channel string) Execution {
-
 	e := Execution{
 		eventName: "PING",
 		channel:   channel,
@@ -19,6 +18,7 @@ func NewPingExecution(channel string) Execution {
 			slack.MsgOptionText("pong", false),
 		}, nil
 	}
+
 	return e
 }
 

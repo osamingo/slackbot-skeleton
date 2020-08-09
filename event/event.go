@@ -3,7 +3,7 @@ package event
 import (
 	"context"
 
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 type (
@@ -23,6 +23,7 @@ func NewRouter(es ...Execution) *Router {
 	for _, e := range es {
 		m[e.eventName] = e.fn
 	}
+
 	return &Router{
 		m: m,
 	}

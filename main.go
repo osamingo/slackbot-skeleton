@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/osamingo/slackbot/bot"
-	"github.com/osamingo/slackbot/event"
+	"github.com/osamingo/slackbot-skeleton/bot"
+	"github.com/osamingo/slackbot-skeleton/event"
 )
 
 func main() {
@@ -18,7 +18,6 @@ func main() {
 }
 
 func run() error {
-
 	// Set environment from .env file.
 	if err := godotenv.Load(); err != nil {
 		return err

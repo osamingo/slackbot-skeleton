@@ -6,10 +6,10 @@ import (
 
 	joehttp "github.com/go-joe/http-server"
 	"github.com/go-joe/joe"
-	slackadpt "github.com/go-joe/slack-adapter"
-	"github.com/nlopes/slack"
-	"github.com/osamingo/slackbot/event"
+	slackadpt "github.com/go-joe/slack-adapter/v2"
+	"github.com/osamingo/slackbot-skeleton/event"
 	"github.com/pkg/errors"
+	"github.com/slack-go/slack"
 	stackdriver "github.com/tommy351/zap-stackdriver"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -25,7 +25,6 @@ type Bot struct {
 
 // NewBot generates bot.Bot.
 func NewBot(name, slackToken, path string, timeout time.Duration, debug bool) (*Bot, error) {
-
 	lvl := zapcore.InfoLevel
 	if debug {
 		lvl = zapcore.DebugLevel
@@ -74,12 +73,12 @@ func (b *Bot) SetRespondRegex(expr string, f func(*joe.Bot) func(joe.Message) er
 // Run starts the Bot.
 func (b *Bot) Run() error {
 	b.bot.Brain.RegisterHandler(b.HandleHTTP)
+
 	return b.bot.Run()
 }
 
 // HandleHTTP routes HTTP requests.
 func (b *Bot) HandleHTTP(ctx context.Context, r joehttp.RequestEvent) error {
-
 	switch r.URL.Path {
 	case "/_ah/warmup":
 		b.bot.Logger.Info("catch warm up request")
