@@ -24,7 +24,7 @@ func run() error {
 	}
 
 	// app engine environment
-	env := os.Getenv("NODE_ENV")
+	debug := os.Getenv("DEBUG")
 	port := os.Getenv("PORT")
 	// write env_variables section in app engine settings.
 	timeout := os.Getenv("TIMEOUT_SECOND")
@@ -34,8 +34,13 @@ func run() error {
 	// token have to set in .env file.
 	token := os.Getenv("SLACK_TOKEN")
 
-	const prodEnv = "production"
-	flag := env != prodEnv
+	var flag bool
+	if debug != "" {
+		var err error
+		if flag, err = strconv.ParseBool(debug); err != nil {
+			return err
+		}
+	}
 
 	sec, err := strconv.Atoi(timeout)
 	if err != nil {
