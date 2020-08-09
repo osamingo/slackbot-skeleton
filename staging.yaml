@@ -19,6 +19,7 @@ automatic_scaling:
   max_concurrent_requests: 80
 
 env_variables:
+  DEBUG: true
   TIMEOUT_SECOND: 15
   BOT_NAME: sample-bot-stg
   EVENT_ROUTING_KEY: X-Bot-Task-Name
