@@ -7,6 +7,4 @@ linters-settings:
 
 linters:
   enable-all: true
-  disable:
-    - whitespace
-    - wsl
+  disable: exhaustivestruct

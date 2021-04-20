@@ -2,13 +2,13 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	joehttp "github.com/go-joe/http-server"
 	"github.com/go-joe/joe"
 	slackadpt "github.com/go-joe/slack-adapter/v2"
 	"github.com/osamingo/slackbot-skeleton/event"
-	"github.com/pkg/errors"
 	"github.com/slack-go/slack"
 	stackdriver "github.com/tommy351/zap-stackdriver"
 	"go.uber.org/zap"
@@ -44,7 +44,7 @@ func NewBot(name, slackToken, path string, timeout time.Duration, debug bool) (*
 		}
 	}))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("bot: failed to build logger with config: %w", err)
 	}
 
 	return &Bot{
@@ -74,7 +74,11 @@ func (b *Bot) SetRespondRegex(expr string, f func(*joe.Bot) func(joe.Message) er
 func (b *Bot) Run() error {
 	b.bot.Brain.RegisterHandler(b.HandleHTTP)
 
-	return b.bot.Run()
+	if err := b.bot.Run(); err != nil {
+		return fmt.Errorf("bot: failed to run: %w", err)
+	}
+
+	return nil
 }
 
 // HandleHTTP routes HTTP requests.
@@ -82,23 +86,22 @@ func (b *Bot) HandleHTTP(ctx context.Context, r joehttp.RequestEvent) error {
 	switch r.URL.Path {
 	case "/_ah/warmup":
 		b.bot.Logger.Info("catch warm up request")
-
 	case "/_events":
-
 		eventName := r.Header.Get(b.routingKey)
+
 		f := b.router.GetFunc(eventName)
 		if f == nil {
-			return errors.Errorf("bot: not found an event, event_name = %s", eventName)
+			return fmt.Errorf("bot: not found an event, event_name = %s", eventName) //nolint:goerr113
 		}
 
 		target, opts, err := f(ctx, r.Body)
 		if err != nil {
-			return errors.Wrap(err, "bot: failed to execute event")
+			return fmt.Errorf("bot: failed to execute event: %w", err)
 		}
 
 		_, _, err = b.slack.PostMessageContext(ctx, target, opts...)
 		if err != nil {
-			return errors.Wrap(err, "bot: failed to send to slack")
+			return fmt.Errorf("bot: failed to send to slack: %w", err)
 		}
 	}
 
