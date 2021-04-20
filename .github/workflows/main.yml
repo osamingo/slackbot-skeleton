@@ -11,27 +11,39 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
+      - uses: actions/setup-go@v2
         with:
-          go-version: 1.15
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: Init dev tools
+          go-version: 1.15.x
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Initialize modules
         run: make init
-      - name: Lint Go Code
+      - name: Run lint
         run: make lint
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
+      - uses: actions/setup-go@v2
         with:
-          go-version: 1.15
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: Init dev tools
+          go-version: 1.15.x
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Initialize modules
         run: make init
-      - name: Test Go Code
+      - name: Run test
         run: make test
