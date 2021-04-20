@@ -2,6 +2,7 @@ package event
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-joe/joe"
 	"github.com/slack-go/slack"
@@ -24,6 +25,10 @@ func NewPingExecution(channel string) Execution {
 
 func PingRespond(_ *joe.Bot) func(joe.Message) error {
 	return func(msg joe.Message) error {
-		return msg.RespondE("pong")
+		if err := msg.RespondE("pong"); err != nil {
+			return fmt.Errorf("event: failed to send a response: %w", err)
+		}
+
+		return nil
 	}
 }

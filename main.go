@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -20,7 +21,7 @@ func main() {
 func run() error {
 	// Set environment from .env file.
 	if err := godotenv.Load(); err != nil {
-		return err
+		return fmt.Errorf("main: failed to load environment variables: %w", err)
 	}
 
 	// app engine environment
@@ -35,21 +36,22 @@ func run() error {
 	token := os.Getenv("SLACK_TOKEN")
 
 	var flag bool
+
 	if debug != "" {
 		var err error
 		if flag, err = strconv.ParseBool(debug); err != nil {
-			return err
+			return fmt.Errorf("main: failed to parse debug environment variable to bool: %w", err)
 		}
 	}
 
 	sec, err := strconv.Atoi(timeout)
 	if err != nil {
-		return err
+		return fmt.Errorf("main: failed to convert timeout sec to interger: %w", err)
 	}
 
 	b, err := bot.NewBot(name, token, ":"+port, time.Duration(sec)*time.Second, flag)
 	if err != nil {
-		return err
+		return fmt.Errorf("main: failed to create a bot: %w", err)
 	}
 
 	b.SetRouter(key, event.NewRouter(
@@ -58,5 +60,9 @@ func run() error {
 
 	b.SetRespondRegex("^ping$", event.PingRespond)
 
-	return b.Run()
+	if err := b.Run(); err != nil {
+		return fmt.Errorf("main: failed to run the bot: %w", err)
+	}
+
+	return nil
 }
